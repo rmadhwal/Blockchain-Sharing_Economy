@@ -1,0 +1,22 @@
+{
+  "name": "sharing-dashboard",
+  "authors": [
+    "Rohan Madhwal"
+  ],
+  "description": "Sharing dashboard",
+  "main": "index.html",
+  "license": "MIT",
+  "homepage": "http://lol.com/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "web3": "^0.16.0",
+    "jquery-ui": "^1.11.4"
+  }
+}
