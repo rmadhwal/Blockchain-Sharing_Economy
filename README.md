@@ -5,6 +5,7 @@ It is based on web3.js and communicates directly with the local Ethereum node ru
 
 To build run:
 ``` sh
+cd ethereum-dashboard
 browserify viz.js -o main.js
 ```
 
