@@ -39,7 +39,7 @@ contract ContractsManager {
         if (msg.sender == owner) // this ensures that only the owner can access the function
             _;
     }
-    
+
     // Constructor
     function ContractsManager(){
         owner = msg.sender;
@@ -99,11 +99,11 @@ contract ApplicationInterface is ContractsManagerEnabled {
 		}
 		else {
 			return false;
-		}		
+		}
 	}
 
 	function deleteUser() returns (bool res) {
-		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");	
+		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");
 		if(UsersDB(usersdb).removeUser(msg.sender)) {
 			return true;
 		}
@@ -113,7 +113,7 @@ contract ApplicationInterface is ContractsManagerEnabled {
 	}
 
 	function registerNewObject(bytes32 objName, bool forSale, uint price, bool forRent, uint pph) returns (bool res) {
-		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");	
+		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");
 		address objectsdb = ContractProvider(ContractsManager).contracts("objectsdb");
 		if(UsersDB(usersdb).userRegistered(msg.sender)) {
 			if(ObjectsDB(objectsdb).addObject(msg.sender, forSale, price, forRent, pph, objName)) {
@@ -145,21 +145,21 @@ contract ApplicationInterface is ContractsManagerEnabled {
 	}
 
 	function buyObject(bytes32 objName) public payable returns (bool res)  {
-		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");	
+		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");
 		address objectsdb = ContractProvider(ContractsManager).contracts("objectsdb");
 		if(UsersDB(usersdb).userRegistered(msg.sender) && ObjectsDB(objectsdb).getObjectSaleStatus(objName) && ObjectsDB(objectsdb).getObjectPrice(objName) <= msg.value) {
+			sellingEvent(objName, UsersDB(usersdb).getUserEmailAddress(msg.sender), UsersDB(usersdb).getUserEmailAddress(ObjectsDB(objectsdb).getObjectOwner(objName)));
 			ObjectsDB(objectsdb).getObjectOwner(objName).transfer(msg.value);
 			ObjectsDB(objectsdb).modifyOwner(msg.sender, objName);
-			sellingEvent(objName, UsersDB(usersdb).getUserEmailAddress(msg.sender), UsersDB(usersdb).getUserEmailAddress(ObjectsDB(objectsdb).getObjectOwner(objName)));
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
-		
+
 	function rentObject(bytes32 objName) public payable returns (bool res) {
-		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");	
+		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");
 		address objectsdb = ContractProvider(ContractsManager).contracts("objectsdb");
 		if(UsersDB(usersdb).userRegistered(msg.sender) && ObjectsDB(objectsdb).getObjectRentStatus(objName)) {
 			ObjectsDB(objectsdb).getObjectOwner(objName).transfer(msg.value);
@@ -171,8 +171,22 @@ contract ApplicationInterface is ContractsManagerEnabled {
 		}
 	}
 
+	function listAllObjects() public returns (bytes32[100] memory objArray, bool res) {
+		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");
+		address objectsdb = ContractProvider(ContractsManager).contracts("objectsdb");
+		bytes32[100] memory newObjArray;
+		bool result;
+		if(UsersDB(usersdb).userRegistered(msg.sender)) {
+			(newObjArray, result) = ObjectsDB(objectsdb).returnAllObjects(msg.sender);
+			return(newObjArray, result);
+		}
+		else {
+			return(newObjArray, false);
+		}
+	}
+
 	function listAllObjectsOwned() public returns (bytes32[10] memory objArray, bool res) {
-		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");	
+		address usersdb = ContractProvider(ContractsManager).contracts("usersdb");
 		address objectsdb = ContractProvider(ContractsManager).contracts("objectsdb");
 		bytes32[10] memory newObjArray;
 		bool result;
@@ -194,6 +208,19 @@ contract ApplicationInterface is ContractsManagerEnabled {
 		address objectsdb = ContractProvider(ContractsManager).contracts("objectsdb");
 		return ObjectsDB(objectsdb).getObjectPph(objName);
 	}
+
+	// - Nicola: Additional code for receiving getObjectRentStatus and getObjectSaleStatus within Application ApplicationInterface
+	function getObjectRentStatus(bytes32 objName) returns (bool forRent) {
+  		address objectsdb = ContractProvider(ContractsManager).contracts("objectsdb");
+  		return ObjectsDB(objectsdb).getObjectRentStatus(objName);
+	}
+
+	function getObjectSaleStatus(bytes32 objName) returns (bool forSale) {
+  		address objectsdb = ContractProvider(ContractsManager).contracts("objectsdb");
+  		return ObjectsDB(objectsdb).getObjectSaleStatus(objName);
+	}
+	// - Nicola: Ends
+
 }
 
 contract ApplicationInterfaceEnabled is ContractsManagerEnabled {
@@ -219,11 +246,11 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 		uint price;
 		bool forRent;
 		uint pph;
-	}	
+	}
 
 	mapping(bytes32 => objectData) objects;
 
-	//Adds new object 
+	//Adds new object
 	function addObject(address objOwner, bool forSale, uint price, bool forRent, uint pph, bytes32 objName) returns (bool res) {
 		if(!isRightPermission()  || objName == ""  || objects[objName].objOwner != address(0)) {
 			return false;
@@ -239,11 +266,11 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 			return true;
 		}
 	}
-	
+
 	//Modifier functions
 	function modifyOwner(address newObjOwner, bytes32 objName) returns (bool res) {
 		if(isRightPermission()) {
-			objects[objName].objOwner = newObjOwner; 
+			objects[objName].objOwner = newObjOwner;
 			return true;
 		}
 		else {
@@ -253,7 +280,7 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 
 	function modifySaleStatus(bool newForSale, bytes32 objName) returns (bool res) {
 		if(isRightPermission()) {
-			objects[objName].forSale = newForSale; 
+			objects[objName].forSale = newForSale;
 			return true;
 		}
 		else {
@@ -263,7 +290,7 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 
 	function modifyPrice(uint newPrice, bytes32 objName) returns (bool res) {
 		if(isRightPermission()) {
-			objects[objName].price = newPrice; 
+			objects[objName].price = newPrice;
 			return true;
 		}
 		else {
@@ -273,17 +300,17 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 
 	function modifyRentStatus(bool newForRent, bytes32 objName) returns (bool res) {
 		if(isRightPermission()) {
-			objects[objName].forRent = newForRent; 
+			objects[objName].forRent = newForRent;
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
-	
+
 	function modifyPPH(uint newPph, bytes32 objName) returns (bool res) {
 		if(isRightPermission()) {
-			objects[objName].pph = newPph; 
+			objects[objName].pph = newPph;
 			return true;
 		}
 		else {
@@ -298,6 +325,13 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 		}
 		else {
 			delete objects[objName];
+			uint256 i=0;
+			for(i;i<objectsInDB;i++)  {
+				if(objectsIndex[i] == objName)
+					objectsIndex[i] = objectsIndex[objectsInDB-1];
+			}
+			delete objectsIndex[objectsInDB-1];
+			objectsInDB--;
 			return true;
 		}
 	}
@@ -309,7 +343,7 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 		}
 		else {
 			return address(0);
-		} 
+		}
 	}
 
 	function getObjectSaleStatus(bytes32 objName) returns (bool forSale) {
@@ -318,7 +352,7 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 		}
 		else {
 			return false;
-		} 
+		}
 	}
 
 	function getObjectPrice(bytes32 objName) returns (uint price) {
@@ -327,7 +361,7 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 		}
 		else {
 			return 0;
-		} 
+		}
 	}
 
 	function getObjectRentStatus(bytes32 objName) returns (bool forRent) {
@@ -336,7 +370,7 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 		}
 		else {
 			return false;
-		} 
+		}
 	}
 
 	function getObjectPph(bytes32 objName) returns (uint pph) {
@@ -345,14 +379,26 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 		}
 		else {
 			return 0;
-		} 
+		}
+	}
+
+	function returnAllObjects(address objOwner) returns(bytes32[100] memory objArray, bool res) {
+		bytes32[100] memory newObjArray;
+		if(isRightPermission()) {
+			uint256 i=0;
+			for(i;i<objectsInDB;i++) 
+				newObjArray[i] = objectsIndex[i];
+			return (newObjArray, true);
+		}
+		else
+			return (newObjArray, false);
 	}
 
 	function returnAllObjectsOwnedByOwner(address objOwner) returns (bytes32[10] memory objArray, bool res) {
+		bytes32[10] memory newObjArray;
 		if(isRightPermission() && objOwner != address(0)) {
 			uint256 i=0;
 			uint256 j=0;
-				bytes32[10] memory newObjArray;
 				for(i;i<objectsInDB;i++) {
 					if(objects[objectsIndex[i]].objOwner == objOwner) {
 						newObjArray[j] = objectsIndex[i];
@@ -361,9 +407,8 @@ contract ObjectsDB is ApplicationInterfaceEnabled {
 				}
 				return (newObjArray, true);
 		}
-		else {
+		else
 			return (newObjArray, false);
-		}
 	}
 
 }
@@ -374,10 +419,10 @@ contract UsersDB is ApplicationInterfaceEnabled {
 	struct userData {
 		bool registered;
 		bytes32 userEmailAddress;
-	}	
+	}
 
 	mapping(address => userData) users;
-	
+
 	//Add new user
 	function addUser(address userAddress, bytes32 userEmailAddress) returns (bool res) {
 		if(!isRightPermission()  ||  users[userAddress].registered || userEmailAddress=="") {
@@ -385,7 +430,7 @@ contract UsersDB is ApplicationInterfaceEnabled {
 		}
 		else {
 			users[userAddress].registered = true;
-			users[userAddress].userEmailAddress = userEmailAddress; 
+			users[userAddress].userEmailAddress = userEmailAddress;
 			return true;
 		}
 	}
@@ -429,4 +474,3 @@ contract UsersDB is ApplicationInterfaceEnabled {
 		}
 	}
 }
-
