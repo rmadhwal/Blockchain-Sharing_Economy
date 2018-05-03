@@ -1,0 +1,24 @@
+{
+  "name": "ethereum-dashboard",
+  "version": "1.0.0",
+  "description": "Ethereum dashboard",
+  "main": "viz.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmadhwal/ethereum-dashboard.git"
+  },
+  "author": "Rohan Madhwal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rmadhwal/etheruem-dashboard"
+  },
+  "homepage": "https://github.com/tomconte/ethereum-dashboard#readme",
+  "dependencies": {
+    "browserify": "^16.1.1",
+    "web3": "^0.17.0-alpha"
+  },
+  "devDependencies": {}
+}

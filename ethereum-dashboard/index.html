@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Dashboard</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      body {
+        padding-left: 50px;
+        padding-right: 50px;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <div class="container-fluid">
+
+      <div class="row">
+        <div>
+          <h1 class="page-header">Dashboard</h1>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="row placeholders">
+                  <div class="col-xs-6 col-sm-3 placeholder">
+                    <h4>ETH</h4>
+                    <span class="text-muted" id="label1"></span>
+                  </div>
+                  <div class="col-xs-6 col-sm-3 placeholder">
+                    <h4>Current Account</h4>
+                    <span class="text-muted" id="label2"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <h2 class="sub-header">Add New Object</h2>
+            <form method="post" action="#" class="form-inline" role="form">
+              <div class="form-group">
+                <label for="objName">Object Name:</label>
+                <input type="text" class="form-control" id="objName" name="objectname" >
+		<label for="forSale">For Sale:</label>
+	 	<input type="checkbox" class="form-control" id="forSale" name="SaleBoolean" >
+		<label for="price">Price:</label>
+		<input type="number" class="form-control" id="price" name="saleprice" >
+		<label for="forRent">For Rent:</label>
+	 	<input type="checkbox" class="form-control" id="forRent" name="RentBoolean">
+		<label for="pph">Price Per Hour:</label>
+		<input type="number" class="form-control" id="pph" name="rentprice" >
+              <button type="submit" id="form-submit" class="btn btn-primary">Add</button>
+            </form>
+        </div>
+      </div>
+
+	<div class="row">
+        <div>
+          <h2 class="sub-header">Remove Object</h2>
+            <form method="post" action="#" class="form-inline" role="form">
+              <div class="form-group">
+                <label for="objNameRemove">Object Name:</label>
+				<select name="object name" id="objNameRemove" class="form-control">
+  </select>
+              <button type="submit" id="remove-submit" class="btn btn-primary">Remove</button>
+            </form>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <h2 class="sub-header">Objects Owned</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Object Name</th>
+					<th>For Sale?</th>
+					<th>Current Selling Price </th>
+					<th>For Rent?</th>
+					<th>Current Price Per Hour</th>
+                </tr>
+              </thead>
+              <tbody id="objects">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/web3/dist/web3.min.js"></script>
+
+    <script src="abi.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
