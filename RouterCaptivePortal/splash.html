@@ -1,0 +1,93 @@
+
+<html>
+  <body>
+  
+    <form>
+      <label>Enter the OTP</label>
+      <input type="text" name="Pass" />
+      <input type="button" value="Submit" onclick="check(this.form.Pass.value)"/>
+    
+  
+  
+  
+  <script type="text/javascript">
+  
+  var numbers = []
+  
+  
+  function calcPrimeNumber(){
+  
+                  var beginNum = 1000;
+                  var endNum = 9999;
+                  var primeNumbs = new Array();
+  
+                  var ctr = beginNum;
+                  while(ctr<=endNum)
+                  {
+                      if(isPrime(ctr)==true)
+                      {
+                          primeNumbs[primeNumbs.length] = ctr;
+                          
+                      }
+                      ctr = ctr+1;
+                  }
+          return primeNumbs;
+          }
+  
+          function isPrime(num)
+          {
+              var flag = true;
+              for(var i=2; i<=Math.ceil(num/2); i++)
+              {
+                  if((num%i)==0)
+                  {
+                      flag = false;
+                      break;
+                  }
+              }
+              return flag;    
+          }
+  numbers = calcPrimeNumber();
+  
+  
+  
+  
+  
+  
+    function check(pass) {
+     
+      for(a = 0; a < numbers.length; a++) {
+        if (pass == numbers[a]) {
+          
+          var x = document.getElementById("formdiv");
+          x.style.display = "block";
+
+          return;
+        }
+      }
+      alert("wrong password");
+    }
+
+
+  
+
+
+
+  </script>
+  </form>
+
+
+  <div id="formdiv" style="display:none">
+      
+        <form method='get' action='$authaction'>
+          <input type='hidden' name='tok' value='$tok'>
+          <input type='hidden' name='redir' value='$redir'>
+          <input type='submit' value='Continue'>
+        </form>
+    </div>
+  
+
+
+  </body>
+  </html>
+  
